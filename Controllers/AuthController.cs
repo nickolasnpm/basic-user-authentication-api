@@ -28,7 +28,7 @@ namespace UserAuthentication.Controllers
                 Id = Guid.NewGuid(),
                 firstName = register.firstName,
                 lastName = register.lastName,
-                position = register.position,
+                role = register.position,
                 email = register.email,
                 password = register.password,
             };
