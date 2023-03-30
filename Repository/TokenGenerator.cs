@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.OAuth.Claims;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -16,12 +15,17 @@ namespace UserAuthentication.Repository
         }
         public Task<string> CreateTokenAsync(User user)
         {
+
             var claims = new List<Claim>();
 
             claims.Add(new Claim(ClaimTypes.GivenName, user.firstName));
             claims.Add(new Claim(ClaimTypes.Surname, user.lastName));
-            claims.Add(new Claim(ClaimTypes.Email, user.email));
-            claims.Add(new Claim(ClaimTypes.Role, user.role));
+            claims.Add(new Claim(ClaimTypes.Email, user.emailAddress));
+
+            user.roles.ForEach((role) =>
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            });
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
 

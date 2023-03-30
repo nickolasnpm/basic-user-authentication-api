@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using UserAuthentication.Data;
+using UserAuthentication.Helpers;
 using UserAuthentication.Models;
 using UserAuthentication.Repository;
 
@@ -12,30 +14,67 @@ namespace UserAuthentication.Controllers
 
         private readonly IUserRepository _userRepository;
         private readonly ITokenGenerator _tokenGenerator;
+        private readonly DBContext _dBContext;
 
-        public AuthController(IUserRepository userRepository, ITokenGenerator tokenGenerator)
+        public AuthController(IUserRepository userRepository, ITokenGenerator tokenGenerator, DBContext dBContext)
         {
             _userRepository = userRepository;
             _tokenGenerator = tokenGenerator;
+            _dBContext = dBContext;
         }
 
         [HttpPost]
         [Route("register")]
-        public async Task<IActionResult> registerUser (Helpers.Register register)
+        public async Task<IActionResult> registerProcess (Register register)
         {
             User? User = new User()
-            {
-                Id = Guid.NewGuid(),
+            { 
                 firstName = register.firstName,
                 lastName = register.lastName,
-                role = register.position,
-                email = register.email,
+                emailAddress = register.emailAddress,
                 password = register.password,
             };
 
-            User = await _userRepository.RegisterUser(User);
+            List<string> checkRoles = new List<string>(); 
 
-            return Ok(User);
+            register.roles.ForEach(roleInput =>
+            {
+                checkRoles.Add(roleInput.Title);
+            });
+
+            User.roles = checkRoles;
+            User = await _userRepository.RegisterUser(User); 
+
+            List<string> checkRolesDB = new List<string>(); 
+
+            foreach (var existingRole in _dBContext.roleDB)
+            {
+                checkRolesDB.Add(existingRole.Title);
+            }
+
+            Role? Role = new Role();
+            UserRole? UserRole = new UserRole();
+
+            foreach (var role in User.roles)
+            {
+                if (checkRolesDB.Contains(role))
+                {
+                    Role? roleInDatabase = await _dBContext.roleDB.FirstOrDefaultAsync(x => x.Title == role);
+
+                    Role.Id = roleInDatabase.Id;
+                    Role.Title = roleInDatabase.Title;
+                }
+                else
+                {
+                    Role.Title = role;
+                    Role = await _userRepository.RegisterRole(Role);
+                }
+                UserRole.UserID = User.Id;
+                UserRole.RoleID = Role.Id;
+                UserRole = await _userRepository.RegisterUserRole(UserRole);
+            }
+            
+            return Ok(register);
 
         }
 
@@ -44,7 +83,7 @@ namespace UserAuthentication.Controllers
         [Route("login")]
         public async Task<IActionResult> loginUser (Helpers.Login login)
         {
-            User? User = await _userRepository.AuthenticateUser(login.email, login.password);
+            User? User = await _userRepository.AuthenticateUser(login.emailAddress, login.password);
 
             if (User != null)
             {
