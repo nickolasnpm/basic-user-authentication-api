@@ -38,11 +38,10 @@ namespace UserAuthentication.Repository
             return userRole;
         }
 
-        public async Task<User> AuthenticateUser(string email, string password)
+        public async Task<User> AuthenticateUser(string email)
         {
             User? User = await _dBContext.userDB.FirstOrDefaultAsync(x => 
-            EF.Functions.Collate(x.emailAddress, "SQL_Latin1_General_CP1_CS_AS") == email &&
-            EF.Functions.Collate(x.password, "SQL_Latin1_General_CP1_CS_AS") == password);
+            EF.Functions.Collate(x.emailAddress, "SQL_Latin1_General_CP1_CS_AS") == email);
 
             if (User == null)
             {

@@ -38,7 +38,7 @@ namespace UserAuthentication.Repository
                 expires: DateTime.Now.AddMinutes(15),
                 signingCredentials: credentials);
 
-            return Task.FromResult(new JwtSecurityTokenHandler().WriteToken(token));
+           return Task.FromResult(new JwtSecurityTokenHandler().WriteToken(token));
         }   
     }
 }

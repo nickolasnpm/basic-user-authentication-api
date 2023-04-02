@@ -12,8 +12,8 @@ using UserAuthentication.Data;
 namespace UserAuthentication.Migrations
 {
     [DbContext(typeof(DBContext))]
-    [Migration("20230330135148_initialmigration")]
-    partial class initialmigration
+    [Migration("20230402035441_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -46,6 +46,9 @@ namespace UserAuthentication.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("age")
+                        .HasColumnType("int");
+
                     b.Property<string>("emailAddress")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -58,7 +61,15 @@ namespace UserAuthentication.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("password")
+                    b.Property<byte[]>("passwordHash")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<byte[]>("passwordSalt")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("thisDay")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

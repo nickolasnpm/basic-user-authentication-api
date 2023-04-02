@@ -14,12 +14,14 @@ namespace UserAuthentication.Controllers
 
         private readonly IUserRepository _userRepository;
         private readonly ITokenGenerator _tokenGenerator;
+        private readonly IPasswordEncryption _passwordEncryption;
         private readonly DBContext _dBContext;
 
-        public AuthController(IUserRepository userRepository, ITokenGenerator tokenGenerator, DBContext dBContext)
+        public AuthController(IUserRepository userRepository, ITokenGenerator tokenGenerator, IPasswordEncryption passwordEncryption, DBContext dBContext)
         {
             _userRepository = userRepository;
             _tokenGenerator = tokenGenerator;
+            _passwordEncryption = passwordEncryption;
             _dBContext = dBContext;
         }
 
@@ -27,12 +29,17 @@ namespace UserAuthentication.Controllers
         [Route("register")]
         public async Task<IActionResult> registerProcess (Register register)
         {
+            _passwordEncryption.CreatePasswordHash(register.password, out byte[] PasswordHash, out byte[] PasswordSalt);
+
             User? User = new User()
             { 
                 firstName = register.firstName,
                 lastName = register.lastName,
+                age = register.age,
+                thisDay = DateTime.Now.ToString("g"),
                 emailAddress = register.emailAddress,
-                password = register.password,
+                passwordHash = PasswordHash,
+                passwordSalt = PasswordSalt
             };
 
             List<string> checkRoles = new List<string>(); 
@@ -83,10 +90,16 @@ namespace UserAuthentication.Controllers
         [Route("login")]
         public async Task<IActionResult> loginUser (Helpers.Login login)
         {
-            User? User = await _userRepository.AuthenticateUser(login.emailAddress, login.password);
+            User? User = await _userRepository.AuthenticateUser(login.emailAddress);
 
             if (User != null)
             {
+
+                if (!(_passwordEncryption.VerifyPasswordHash(login.password, User.passwordHash, User.passwordSalt)))
+                {
+                    return BadRequest("Wrong Password");
+                }
+
                 var token = await _tokenGenerator.CreateTokenAsync(User);
                 return Ok(token);
             }
