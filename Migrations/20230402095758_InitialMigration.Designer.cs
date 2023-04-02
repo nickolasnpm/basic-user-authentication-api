@@ -12,7 +12,7 @@ using UserAuthentication.Data;
 namespace UserAuthentication.Migrations
 {
     [DbContext(typeof(DBContext))]
-    [Migration("20230402035441_InitialMigration")]
+    [Migration("20230402095758_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -37,7 +37,7 @@ namespace UserAuthentication.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("roleDB");
+                    b.ToTable("RoleTable");
                 });
 
             modelBuilder.Entity("UserAuthentication.Models.User", b =>
@@ -75,7 +75,7 @@ namespace UserAuthentication.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("userDB");
+                    b.ToTable("UserTable");
                 });
 
             modelBuilder.Entity("UserAuthentication.Models.UserRole", b =>
@@ -96,7 +96,7 @@ namespace UserAuthentication.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("userRoleDB");
+                    b.ToTable("UserRoleTable");
                 });
 
             modelBuilder.Entity("UserAuthentication.Models.UserRole", b =>

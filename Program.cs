@@ -40,7 +40,7 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddDbContext<DBContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SchoolInformation"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AuthExample"));
 });
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();

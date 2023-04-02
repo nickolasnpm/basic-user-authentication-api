@@ -22,9 +22,9 @@ namespace UserAuthentication.Data
                 .HasForeignKey(z => z.RoleID);
         }
 
-        public DbSet<User> userDB { get; set; }
-        public DbSet<Role> roleDB { get; set; }
-        public DbSet<UserRole> userRoleDB { get; set; }
+        public DbSet<User> UserTable { get; set; }
+        public DbSet<Role> RoleTable { get; set; }
+        public DbSet<UserRole> UserRoleTable { get; set; }
 
     }
 }

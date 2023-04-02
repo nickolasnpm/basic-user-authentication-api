@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Mail;
 using UserAuthentication.Data;
 using UserAuthentication.Helpers;
 using UserAuthentication.Models;
@@ -37,11 +38,29 @@ namespace UserAuthentication.Controllers
                 lastName = register.lastName,
                 age = register.age,
                 thisDay = DateTime.Now.ToString("g"),
-                emailAddress = register.emailAddress,
                 passwordHash = PasswordHash,
                 passwordSalt = PasswordSalt
             };
 
+            #region Check Email 
+            List<string> checkEmail = new List<string>();
+
+            foreach (var email in _dBContext.UserTable)
+            {
+                checkEmail.Add(email.emailAddress);
+            }
+
+            if (checkEmail.Contains(register.emailAddress))
+            {
+                return BadRequest("Email Address already exists");
+            }
+            else
+            {
+                User.emailAddress = register.emailAddress;
+            }
+            #endregion
+
+            #region Check Roles
             List<string> checkRoles = new List<string>(); 
 
             register.roles.ForEach(roleInput =>
@@ -54,7 +73,7 @@ namespace UserAuthentication.Controllers
 
             List<string> checkRolesDB = new List<string>(); 
 
-            foreach (var existingRole in _dBContext.roleDB)
+            foreach (var existingRole in _dBContext.RoleTable)
             {
                 checkRolesDB.Add(existingRole.Title);
             }
@@ -66,7 +85,7 @@ namespace UserAuthentication.Controllers
             {
                 if (checkRolesDB.Contains(role))
                 {
-                    Role? roleInDatabase = await _dBContext.roleDB.FirstOrDefaultAsync(x => x.Title == role);
+                    Role? roleInDatabase = await _dBContext.RoleTable.FirstOrDefaultAsync(x => x.Title == role);
 
                     Role.Id = roleInDatabase.Id;
                     Role.Title = roleInDatabase.Title;
@@ -75,12 +94,15 @@ namespace UserAuthentication.Controllers
                 {
                     Role.Title = role;
                     Role = await _userRepository.RegisterRole(Role);
+                    // register role - 1, 2, 3 ...
                 }
                 UserRole.UserID = User.Id;
                 UserRole.RoleID = Role.Id;
                 UserRole = await _userRepository.RegisterUserRole(UserRole);
+                // register UserRole - 1, 2, 3 ...
             }
-            
+            #endregion
+
             return Ok(register);
 
         }

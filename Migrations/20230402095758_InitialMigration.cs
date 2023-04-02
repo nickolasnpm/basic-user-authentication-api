@@ -12,7 +12,7 @@ namespace UserAuthentication.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "roleDB",
+                name: "RoleTable",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -20,11 +20,11 @@ namespace UserAuthentication.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_roleDB", x => x.Id);
+                    table.PrimaryKey("PK_RoleTable", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "userDB",
+                name: "UserTable",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -38,11 +38,11 @@ namespace UserAuthentication.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_userDB", x => x.Id);
+                    table.PrimaryKey("PK_UserTable", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "userRoleDB",
+                name: "UserRoleTable",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -51,29 +51,29 @@ namespace UserAuthentication.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_userRoleDB", x => x.Id);
+                    table.PrimaryKey("PK_UserRoleTable", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_userRoleDB_roleDB_RoleID",
+                        name: "FK_UserRoleTable_RoleTable_RoleID",
                         column: x => x.RoleID,
-                        principalTable: "roleDB",
+                        principalTable: "RoleTable",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_userRoleDB_userDB_UserID",
+                        name: "FK_UserRoleTable_UserTable_UserID",
                         column: x => x.UserID,
-                        principalTable: "userDB",
+                        principalTable: "UserTable",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_userRoleDB_RoleID",
-                table: "userRoleDB",
+                name: "IX_UserRoleTable_RoleID",
+                table: "UserRoleTable",
                 column: "RoleID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_userRoleDB_UserID",
-                table: "userRoleDB",
+                name: "IX_UserRoleTable_UserID",
+                table: "UserRoleTable",
                 column: "UserID");
         }
 
@@ -81,13 +81,13 @@ namespace UserAuthentication.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "userRoleDB");
+                name: "UserRoleTable");
 
             migrationBuilder.DropTable(
-                name: "roleDB");
+                name: "RoleTable");
 
             migrationBuilder.DropTable(
-                name: "userDB");
+                name: "UserTable");
         }
     }
 }

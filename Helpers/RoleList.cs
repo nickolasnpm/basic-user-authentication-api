@@ -6,7 +6,7 @@ namespace UserAuthentication.Helpers
     {
         private string _title;
 
-        [StringLength(8, MinimumLength = 6, 
+        [StringLength(8, MinimumLength = 4, 
             ErrorMessage = "The role input is not within our system")]
         public string Title
         {
@@ -18,7 +18,7 @@ namespace UserAuthentication.Helpers
             {
                 string input = value.ToLower();
                 
-                if (input == "student" || input == "teacher")
+                if (input == "admin" || input == "user")
                 {
                     _title = input;
                 }
